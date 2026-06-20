@@ -1,51 +1,211 @@
-# Sample workflow for building and deploying a Jekyll site to GitHub Pages
-name: Deploy Jekyll with GitHub Pages dependencies preinstalled
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Analytics Dashboard Prototype</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-on:
-  # Runs on pushes targeting the default branch
-  push:
-    branches: ["main"]
+<style>
+body {
+    font-family: Arial;
+    background: #f5f6fa;
+    margin: 20px;
+}
+h1 { text-align: center; }
 
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
+.container {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 15px;
+}
 
-# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
-permissions:
-  contents: read
-  pages: write
-  id-token: write
+.card {
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
 
-# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
-# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
-concurrency:
-  group: "pages"
-  cancel-in-progress: false
+.kpi {
+    font-size: 22px;
+    font-weight: bold;
+    text-align: center;
+}
 
-jobs:
-  # Build job
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
-      - name: Build with Jekyll
-        uses: actions/jekyll-build-pages@v1
-        with:
-          source: ./
-          destination: ./_site
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+.green { color: green; }
+.amber { color: orange; }
+.red { color: red; }
 
-  # Deployment job
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v5
+.full { grid-column: span 6; }
+.half { grid-column: span 3; }
+
+canvas {
+    width: 100% !important;
+    height: 260px !important;
+}
+</style>
+</head>
+
+<body>
+
+<h1>📊 Analytics Team Dashboard</h1>
+<p style="text-align:center">
+<b>PI 1 & PI 2 Performance | Delivery ~60% | Focus: Improve Planning & Reduce Carry Forward</b>
+</p>
+
+<div class="container">
+
+<!-- EXECUTIVE SUMMARY KPI -->
+<div class="card"><div>PI 1 Delivery</div><div class="kpi amber">60%</div></div>
+<div class="card"><div>PI 2 Delivery</div><div class="kpi amber">62%</div></div>
+<div class="card"><div>Total Items (PI2)</div><div class="kpi">110</div></div>
+<div class="card"><div>Achieved Items</div><div class="kpi green">68</div></div>
+<div class="card"><div>Carry Forward</div><div class="kpi red">42</div></div>
+<div class="card"><div>Blocked Items</div><div class="kpi red">15</div></div>
+
+<!-- PI PERFORMANCE -->
+<div class="card half">
+    <h3>Items per PI</h3>
+    <canvas id="itemsPI"></canvas>
+</div>
+
+<div class="card half">
+    <h3>Planned vs Achieved</h3>
+    <canvas id="plannedAchieved"></canvas>
+</div>
+
+<!-- OWNERSHIP -->
+<div class="card half">
+    <h3>Workload by Owner</h3>
+    <canvas id="ownerChart"></canvas>
+</div>
+
+<div class="card half">
+    <h3>Status Distribution</h3>
+    <canvas id="statusChart"></canvas>
+</div>
+
+<!-- NON-ACHIEVEMENT REASONS -->
+<div class="card half">
+    <h3>Reasons for Not Achieving</h3>
+    <canvas id="reasonChart"></canvas>
+</div>
+
+<!-- IMPROVEMENTS -->
+<div class="card half">
+    <h3>Improvement Actions</h3>
+    <canvas id="improvementChart"></canvas>
+</div>
+
+<!-- TABLE -->
+<div class="card full">
+<h3>Backlog Details</h3>
+<table border="1" width="100%" cellspacing="0">
+<tr>
+<th>PI</th><th>Item</th><th>Owner</th><th>Status</th><th>Achieved</th><th>Reason</th><th>Improvement</th>
+</tr>
+<tr>
+<td>PI 2</td><td>Dashboard Enhancement</td><td>Salma</td><td>In Progress</td><td>No</td><td>Dependency</td><td>Escalate dependency</td>
+</tr>
+<tr>
+<td>PI 2</td><td>Data Fix</td><td>Ahmed</td><td>Completed</td><td>Yes</td><td>-</td><td>-</td>
+</tr>
+<tr>
+<td>PI 1</td><td>Automation</td><td>Ali</td><td>Carry Forward</td><td>No</td><td>Capacity</td><td>Better planning</td>
+</tr>
+</table>
+</div>
+
+<!-- EXECUTIVE INSIGHTS -->
+<div class="card full">
+<h3>Executive Summary</h3>
+<ul>
+<li>Delivery across PIs remains stable at ~60%, indicating a consistent but constrained throughput.</li>
+<li>High carry-forward (~40%) suggests overcommitment or dependency-related delays.</li>
+<li>Main reasons for non-achievement are dependency and capacity issues.</li>
+<li>Focus area: improve PI planning accuracy and manage blockers earlier.</li>
+</ul>
+</div>
+
+</div>
+
+<script>
+
+// Items per PI
+new Chart(document.getElementById('itemsPI'), {
+    type: 'bar',
+    data: {
+        labels: ['PI1','PI2'],
+        datasets: [{
+            label: 'Total Items',
+            data: [100,110],
+            backgroundColor:'#3498db'
+        }]
+    }
+});
+
+// Planned vs Achieved
+new Chart(document.getElementById('plannedAchieved'), {
+    type:'bar',
+    data:{
+        labels:['PI1','PI2'],
+        datasets:[
+            {label:'Planned', data:[100,110], backgroundColor:'#95a5a6'},
+            {label:'Achieved', data:[60,68], backgroundColor:'#2ecc71'}
+        ]
+    }
+});
+
+// Owner workload
+new Chart(document.getElementById('ownerChart'), {
+    type:'bar',
+    data:{
+        labels:['Salma','Ahmed','Ali','Sara'],
+        datasets:[{
+            label:'Items',
+            data:[30,25,28,27],
+            backgroundColor:'#9b59b6'
+        }]
+    }
+});
+
+// Status distribution
+new Chart(document.getElementById('statusChart'), {
+    type:'doughnut',
+    data:{
+        labels:['Completed','In Progress','Blocked','Carry Forward'],
+        datasets:[{
+            data:[68,20,15,42],
+            backgroundColor:['green','orange','red','#7f8c8d']
+        }]
+    }
+});
+
+// Reasons
+new Chart(document.getElementById('reasonChart'), {
+    type:'bar',
+    data:{
+        labels:['Dependency','Capacity','Scope Change'],
+        datasets:[{
+            data:[25,10,7],
+            backgroundColor:'#e74c3c'
+        }]
+    }
+});
+
+// Improvements
+new Chart(document.getElementById('improvementChart'), {
+    type:'bar',
+    data:{
+        labels:['Replan Capacity','Escalate','Refine Scope'],
+        datasets:[{
+            data:[15,20,10],
+            backgroundColor:'#2ecc71'
+        }]
+    }
+});
+
+</script>
+
+</body>
+</html>
